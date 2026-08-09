@@ -35,7 +35,7 @@ if swordTool then
             if not humanoid then warn(string.format("Failed to find %'s humanoid!", playerName)) return end
             print(string.format("Trying to kill: %s...", playerName))
 
-            local function touch()
+            local function touch(): ()
                 firetouchinterest(handle, root, true)
                 task.wait()
                 firetouchinterest(handle, root, false)
@@ -45,7 +45,7 @@ if swordTool then
             local thread: thread?  = nil
             local startTime = os.clock()
 
-            local function cancel()
+            local function cancel(): ()
                 isRunning = false
                 task.cancel(thread)
             end
