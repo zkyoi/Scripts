@@ -50,7 +50,9 @@ if swordTool then
 
             local function Cancel(): ()
                 isRunning = false
-                task.cancel(thread)
+                if thread then
+                    task.cancel(thread)
+                end
             end
 
             thread = task.spawn(function()
