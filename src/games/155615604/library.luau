@@ -1,4 +1,4 @@
-local PrisonLife = {}
+local prisonlife = {}
 
 -- // Services
 local Workspace = game:GetService("Workspace")
@@ -56,7 +56,7 @@ local function CheckCarSeat(carModel, spawnerPos): VehicleSeat?
 end
 
 -- // Core Functions
-function PrisonLife.init(vortexLibrary): { SpawnCar: () -> () }?
+function prisonlife.init(vortexLibrary): { SpawnCar: () -> () }?
     local vortex = vortexLibrary
     if not vortex then return nil end
 
@@ -139,4 +139,4 @@ function PrisonLife.init(vortexLibrary): { SpawnCar: () -> () }?
     return lib
 end
 
-return PrisonLife
+return prisonlife
