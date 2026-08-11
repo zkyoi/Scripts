@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- // Variables
 local localPlayer: Player? = Players.LocalPlayer
+
 local carContainer = Workspace:FindFirstChild("CarContainer")
 local prisonItems = Workspace:FindFirstChild("Prison_ITEMS")
 local buttonsFolder = prisonItems:FindFirstChild("buttons")
@@ -20,88 +21,83 @@ local remotes = {
 local MAX_SPAWN_DISTANCE: number = 35
 local TARGET_CAR_NAME: string = "Sedan"
 
--- // Helper Functions
-local function GetSpawnerPart(): ()
-    for _, child in buttonsFolder:GetChildren() do
-        local targetPart: BasePart? = nil
-
-        if child:IsA("Model") then
-            targetPart = child:FindFirstChild("Car Spawner")
-        elseif child:IsA("BasePart") and child.Name == "Car Spawner" then
-            targetPart = child
-        end
-
-        if targetPart and targetPart:IsA("BasePart") then
-            return targetPart
-        end
-    end
-
-    return nil
-end
-
-local function CheckCarSeat(carModel, spawnerPos): VehicleSeat?
-    if not carModel then return nil end
-
-    local body: Model? = carModel:FindFirstChild("Body")
-    local seat: VehicleSeat? = (body and body:FindFirstChild("VehicleSeat")) or carModel:FindFirstChild("VehicleSeat")
-
-    if seat and seat:IsA("BasePart") and seat:FindFirstChild("ReadyToSpawn") then
-        local distance = (seat.Position - spawnerPos).Magnitude
-        if distance <= MAX_SPAWN_DISTANCE then
-            return seat
-        end
-    end
-
-    return nil
-end
-
--- // Core Functions
-function prisonlife.init(vortexLibrary): { SpawnCar: () -> () }?
+function prisonlife.init(vortexLibrary): { SpawnCar: () -> () }
+    if not vortexLibrary then return end
     local vortex = vortexLibrary
-    if not vortex then return nil end
 
     local lib = {}
 
-    function lib.SpawnCar(): ()
-        -- Setup
+    -- // Helper Functions
+    local function GetSpawner(): BasePart?
+        for _, child in buttonsFolder:GetChildren() do
+            local targetPart: BasePart? = nil
+
+            if child:IsA("Model") then
+                targetPart = child:FindFirstChild("Car Spawner")
+            elseif child:IsA("BasePart") and child.Name == "Car Spawner" then
+                targetPart = child
+            end
+
+            if targetPart and targetPart:IsA("BasePart") then
+                return targetPart
+            end
+        end
+
+        return nil
+    end
+
+    local function CheckSeat(car, spawnerPosition): VehicleSeat?
+        if not car then return nil end
+
+        local body: Model? = car:FindFirstChild("Body")
+        local seat: VehicleSeat? = (body and body:FindFirstChild("VehicleSeat"))
+
+        if seat and seat:IsA("VehicleSeat") and seat:FindFirstChild("ReadyToSpawn") then
+            local distance = (seat.Position - spawnerPosition).Magnitude
+            if distance <= MAX_SPAWN_DISTANCE then
+                return seat :: VehicleSeat
+            end
+        end
+    end
+
+    -- // Core Functions
+    function lib.SpawnVehicle(): ()
         local character: Model? = vortex.GetChar(localPlayer)
+        if not character then warn("Failed to find character!") return end
         local root: BasePart? = vortex.GetRoot(character)
-        local humanoid: Humanoid? = character and vortex.GetHumanoid(character)
-        if not character or not root or not humanoid then warn("Missing variables!") return end
+        if not root then warn("Failed to find HumanoidRootPart!") return end
+        local humanoid: Humanoid? = vortex.GetHumanoid(character)
+        if not humanoid then warn("Failed to find Humanoid!") return end
 
-        local spawnerPart: BasePart? = GetSpawnerPart()
-        if not spawnerPart then warn("Failed to find Spawner Part!") return end
+        local spawner: BasePart? = GetSpawner()
+        if not spawner then warn("Failed to find Spawner!") return end
 
-        local spawnerCFrame: CFrame? = vortex.GetCFrame(spawnerPart)
-        if not spawnerCFrame then warn("Failed to get CFrame!") return end
+        local spawnerCFrame = vortex.GetCFrame(spawner)
+        if not spawnerCFrame then warn("Failed to get Spawner CFrame!") return end
 
-        -- Teleport character to spawner
         vortex.TeleportTo(spawnerCFrame * CFrame.new(0, 3, 0))
         task.wait(0.25)
 
-        local targetSeat: VehicleSeat? = nil
-
+        local targetSeat: VehicleSeat?
         local connection: RBXScriptConnection?
         connection = carContainer.ChildAdded:Connect(function(car)
             task.wait(0.1)
 
-            local seat: VehicleSeat? = CheckCarSeat(car, spawnerCFrame.Position)
+            local seat: VehicleSeat? = CheckSeat(car, spawnerCFrame.Position)
             if seat then
                 targetSeat = seat
             end
         end)
 
-        -- Spawn car using remote
         task.spawn(function()
-            remotes["InteractWithItem"]:InvokeServer(spawnerPart)
+            remotes["InteractWithItem"]:InvokeServer(spawner)
         end)
 
-        -- Timer
-        local getTimer = vortex.CreateTimer(5)
+        local getTimer = vortex.CreateTimer(3)
         while true do
             local data = getTimer()
-            for _, car in carContainer:GetChildren() do
-                local seat: VehicleSeat? = CheckCarSeat(car, spawnerCFrame.Position)
+            for _, car: Model? in carContainer:GetChildren() do
+                local seat: VehicleSeat? = CheckSeat(car, spawnerCFrame.Position)
                 if seat then
                     targetSeat = seat
                     break
@@ -114,25 +110,21 @@ function prisonlife.init(vortexLibrary): { SpawnCar: () -> () }?
             end
 
             if targetSeat then break end
-            task.wait(0.1)
+            task.wait(0.05)
         end
 
         vortex.Disconnect(connection)
 
-        -- Get into car
         if targetSeat then
             vortex.TeleportTo(targetSeat.CFrame * CFrame.new(0, 2, 0))
             if firetouchinterest then
-                firetouchinterest(root, targetSeat, true)
-            end
-            task.wait()
-            if firetouchinterest then
-                firetouchinterest(root, targetSeat, false)
+                firetouchinterest(root, spawner, true)
+                task.wait()
+                firetouchinterest(root, spawner, false)
             end
             targetSeat:Sit(humanoid)
-            print("Spawned car!")
         else
-            warn("Failed to spawn car!")
+            warn("Failed!")
         end
     end
 
