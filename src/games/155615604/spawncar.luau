@@ -5,4 +5,4 @@ local vortex = loadstring(game:HttpGet("https://github.com/zkyoi/Vortex/releases
 -- // Prison Life Library
 local prisonlife = loadstring(game:HttpGet("https://raw.githubusercontent.com/zkyoi/Scripts/refs/heads/main/src/games/155615604/library.luau"))().init(vortex)
 
-prisonlife.SpawnCar()
+prisonlife.SpawnVehicle()
