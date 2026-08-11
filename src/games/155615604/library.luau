@@ -76,7 +76,7 @@ function prisonlife.init(vortexLibrary): { SpawnCar: () -> () }?
         if not spawnerCFrame then warn("Failed to get CFrame!") return end
 
         -- Teleport character to spawner
-        root.CFrame = spawnerCFrame * CFrame.new(0, 3, 0)
+        vortex.TeleportTo(spawnerCFrame * CFrame.new(0, 3, 0))
         task.wait(0.25)
 
         local targetSeat: VehicleSeat? = nil
