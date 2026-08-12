@@ -19,7 +19,7 @@ if not glock17 then warn("Failed to find Glock 17!") return end
 local inflictTarget: RemoteEvent = glock17.GunScript_Server.InflictTarget
 if not inflictTarget then warn("Failed to find InflictTarget remote!") return end
 
-local pvpToggle = game:GetService("ReplicatedStorage").PvPToggle
+local pvpToggle: RemoteEvent = game:GetService("ReplicatedStorage").PvPToggle
 if not pvpToggle then warn("Failed to find PvPToggle remote!") return end
 
 local function Kill(character): boolean
@@ -57,7 +57,7 @@ if not equip then warn("Failed to equip Glock 17!") return end
 ]]--
 
 -- Enabled pvp forcefully
-local pvpAttribute = localPlayer:GetAttribute("PvpEnabled")
+local pvpAttribute: boolean? = localPlayer:GetAttribute("PvpEnabled")
 if pvpAttribute ~= nil then
     pvpSetting = pvpAttribute
     if pvpAttribute == false then
@@ -65,7 +65,7 @@ if pvpAttribute ~= nil then
     end
 end
 
-local isKilling = true
+local isKilling: boolean = true
 
 -- Kill all players
 if #allPlayers > 1 then
