@@ -1,6 +1,7 @@
 -- // Library
 local _version: string = "v1.1.1"
 local vortex = loadstring(game:HttpGet("https://github.com/zkyoi/Vortex/releases/download/" .. _version .. "/main.luau"))()
+if not vortex then warn("Failed to load Vortex!") return nil end
 
 -- // Services
 local Workspace = game:GetService("Workspace")
