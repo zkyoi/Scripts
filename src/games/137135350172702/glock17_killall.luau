@@ -45,8 +45,11 @@ local function Kill(character): boolean
     end
 end
 
+--[[
+-- Optional
 local equip = vortex.EquipTool(glock17)
 if not equip then warn("Failed to equip Glock 17!") return end
+]]--
 
 -- Kill all players (if pvp is on)
 if #allPlayers > 1 then
