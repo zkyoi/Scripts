@@ -19,6 +19,9 @@ if not glock17 then warn("Failed to find Glock 17!") return end
 local inflictTarget: RemoteEvent = glock17.GunScript_Server.InflictTarget
 if not inflictTarget then warn("Failed to find InflictTarget remote!") return end
 
+local pvpToggle = game:GetService("ReplicatedStorage").PvPToggle
+if not pvpToggle then warn("Failed to find PvPToggle remote!") return end
+
 local function Kill(character): boolean
     local characterName = character.Name
     local humanoid: Humanoid? = vortex.GetHumanoid(character)
@@ -36,13 +39,15 @@ local function Kill(character): boolean
         true
     )
 
-    task.wait(1)
+    task.spawn(function()
+        task.wait(1)
 
-    if humanoid and humanoid.Health <= 0 then
-        print(string.format("Killed %s!", characterName))
-    else
-        warn(string.format("Failed to kill %s!", characterName))
-    end
+        if humanoid and humanoid.Health <= 0 then
+            print(string.format("Killed %s!", characterName))
+        else
+            warn(string.format("Failed to kill %s!", characterName))
+        end
+    end)
 end
 
 --[[
@@ -51,11 +56,22 @@ local equip = vortex.EquipTool(glock17)
 if not equip then warn("Failed to equip Glock 17!") return end
 ]]--
 
--- Kill all players (if pvp is on)
+-- Enabled pvp forcefully
+local pvpAttribute = localPlayer:GetAttribute("PvpEnabled")
+if pvpAttribute ~= nil then
+    pvpSetting = pvpAttribute
+    if pvpAttribute == false then
+        pvpToggle:FireServer()
+    end
+end
+
+local isKilling = true
+
+-- Kill all players
 if #allPlayers > 1 then
     for _, player in allPlayers do
         if player == localPlayer then continue end
-        task.spawn(Kill, vortex.GetChar(player))
+        Kill(vortex.GetChar(player))
         task.wait()
     end
 end
@@ -65,5 +81,15 @@ for _, v in Workspace:GetChildren() do
     if v:IsA("Model") and string.find(v.Name:lower(), "zombie") then
         task.spawn(Kill, v)
         task.wait()
+    end
+end
+
+isKilling = false
+
+task.wait(1)
+
+if pvpAttribute ~= nil and isKilling == false then
+    if pvpAttribute ~= localPlayer:GetAttribute("PvpEnabled") then
+        pvpToggle:FireServer()
     end
 end
