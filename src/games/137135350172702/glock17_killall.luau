@@ -23,7 +23,7 @@ local pvpToggle: RemoteEvent = game:GetService("ReplicatedStorage").PvPToggle
 if not pvpToggle then warn("Failed to find PvPToggle remote!") return end
 
 local function Kill(character): boolean
-    local characterName = character.Name
+    local characterName: string = character.Name
     local humanoid: Humanoid? = vortex.GetHumanoid(character)
     local root: BasePart? = vortex.GetRoot(character)
     if not humanoid or not root then warn("Failed to find humanoid or root!") return end
