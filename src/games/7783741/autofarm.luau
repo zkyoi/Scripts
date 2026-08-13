@@ -20,6 +20,7 @@ if not root then warn("Failed to find root!") return end
 
 local isAutoFarming: boolean = false
 local isFinished: boolean = false
+local collectedBadge: boolean = false
 
 -- // Helper Functions
 local function FindKiller(): Model?
@@ -37,6 +38,8 @@ local lastKiller: Model?
 local currentKiller: Model? = FindKiller()
 
 isAutoFarming = true
+
+print("Loaded, starting AutoFarm!")
 
 while isAutoFarming do
     -- Checks
@@ -97,8 +100,9 @@ while isAutoFarming do
                     end
                 elseif name == "BADGE" and coin:IsA("Model") or coin:IsA("BasePart") then
                     local basePart: BasePart? = coin:FindFirstChild("Parts") and coin:FindFirstChild("Parts"):FindFirstChild("Base")
-                    if basePart ~= nil then -- and root:IsDescendantOf(Workspace) and basePart:IsDescendantOf(Workspace)
+                    if basePart ~= nil and not collectedBadge then -- and root:IsDescendantOf(Workspace) and basePart:IsDescendantOf(Workspace)
                         print("Collecting Badge..")
+                        collectedBadge = true
                         local success, err = pcall(function()
                             firetouchinterest(root, basePart, true)
                             task.wait(0.05)
@@ -140,10 +144,12 @@ while isAutoFarming do
         -- Finished
         if not isFinished then
             isFinished = true
+            collectedBadge = false
             print("Finished! Waiting for next round..")
         end
     end
 
+    -- This does check for new round
     currentKiller = FindKiller()
     if currentKiller ~= nil and currentKiller ~= lastKiller then
         isFinished = false
