@@ -13,6 +13,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- // Variables
 local localPlayer: Player? = Players.LocalPlayer
 
+-- // Game Variables
 local carContainer = Workspace:FindFirstChild("CarContainer")
 local prisonItems = Workspace:FindFirstChild("Prison_ITEMS")
 local buttonsFolder = prisonItems:FindFirstChild("buttons")
