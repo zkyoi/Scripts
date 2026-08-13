@@ -15,6 +15,8 @@ local character: Model? = vortex.GetChar(localPlayer)
 if not character then warn("Failed to find character!") return end
 local root: BasePart? = vortex.GetRoot(character)
 if not root then warn("Failed to find root!") return end
+
+-- // Game Variables
 local weaponsFolder: Instance? = Workspace:FindFirstChild("Weapons")
 if not weaponsFolder then warn("Failed to find Weapons folder!") return end
 
