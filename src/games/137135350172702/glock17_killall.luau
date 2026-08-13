@@ -24,7 +24,7 @@ if not inflictTarget then warn("Failed to find InflictTarget remote!") return en
 local pvpToggle: RemoteEvent = game:GetService("ReplicatedStorage").PvPToggle
 if not pvpToggle then warn("Failed to find PvPToggle remote!") return end
 
-local function Kill(character): boolean
+local function Kill(character: Model?): boolean
     local characterName: string = character.Name
     local humanoid: Humanoid? = vortex.GetHumanoid(character)
     local root: BasePart? = vortex.GetRoot(character)
