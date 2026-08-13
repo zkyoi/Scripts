@@ -13,6 +13,7 @@ local localPlayer: Player = Players.LocalPlayer
 local character: Model? = vortex.GetChar(localPlayer)
 if not character then warn("Failed to find character!") return end
 
+-- // Game Variables
 local glock17: Tool? = vortex.FindTool(localPlayer, "Glock 17")
 if not glock17 then warn("Failed to find Glock 17!") return end
 
