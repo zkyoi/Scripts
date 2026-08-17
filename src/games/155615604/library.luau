@@ -1,7 +1,6 @@
 -- // Vortex Library
 local _version: string = "v1.2.0"
-local vortex = loadstring(game:HttpGet("https://github.com/zkyoi/Vortex/releases/download/" .. _version .. "/main.luau"))()
-if not vortex then warn("Failed to load Vortex!") return nil end
+local vortex = loadstring(game:HttpGet("https://github.com/zkyoi/Vortex/releases/download/" .. _version .. "/main.luau", true))()
 
 local prisonlife = {}
 
